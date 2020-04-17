@@ -1,0 +1,298 @@
+class SwayHandler : StaticEventHandler
+{
+	SwayManager sway;
+	
+	override void WorldLoaded(WorldEvent e)
+	{
+		if (e.isSaveGame || e.isReopen)
+			return;
+		
+		if (!sway)
+		{
+			sway = new("SwayManager");
+			sway.ChangeStatNum(Thinker.MAX_STATNUM);
+			for (uint i = 0; i < MAXPLAYERS; ++i)
+			{
+				if (!playerInGame[i] || !players[i].mo)
+					continue;
+				
+				sway.prevAngle[i] = players[i].mo.angle;
+				sway.prevPitch[i] = players[i].mo.pitch;
+				let psp = players[i].GetPSPrite(PSP_WEAPON);
+				sway.prevX[i] = psp.x;
+				sway.prevY[i] = psp.y;
+			}
+		}
+	}
+}
+
+class SwayManager : Thinker
+{
+	double prevAngle[MAXPLAYERS];
+	double prevPitch[MAXPLAYERS];
+	double prevX[MAXPLAYERS];
+	double prevY[MAXPLAYERS];
+	
+	double xOffset[MAXPLAYERS];
+	double yOffset[MAXPLAYERS];
+	double vOffset[MAXPLAYERS];
+	
+	// General
+	
+	transient CVar fireSway[MAXPLAYERS];
+	transient CVar bobSway[MAXPLAYERS];
+	transient CVar noSwayBob[MAXPLAYERS];
+	transient CVar vInverse[MAXPLAYERS];
+	transient CVar vertScale[MAXPLAYERS];
+	
+	// Horizontal sway
+	
+	transient CVar swayHInverse[MAXPLAYERS];
+	transient CVar swayHCrouch[MAXPLAYERS];
+	transient CVar swayHScalar[MAXPLAYERS];
+	transient CVar swayHSpeed[MAXPLAYERS];
+	transient CVar swayHAccuracy[MAXPLAYERS];
+	
+	// Vertical sway
+	
+	transient CVar swayVInverse[MAXPLAYERS];
+	transient CVar swayVCrouch[MAXPLAYERS];
+	transient CVar swayVScalar[MAXPLAYERS];
+	transient CVar swayVSpeed[MAXPLAYERS];
+	transient CVar swayVAccuracy[MAXPLAYERS];
+	
+	// Movement
+	
+	transient CVar vMoveSway[MAXPLAYERS];
+	transient CVar hMoveSway[MAXPLAYERS];
+	transient CVar fMoveSway[MAXPLAYERS];
+	
+	override void Tick()
+	{
+		for (uint i = 0; i < MAXPLAYERS; ++i)
+		{
+			if (!playerInGame[i] || !players[i].mo)
+				continue;
+			
+			CheckCVars(i);
+			
+			// This is a best guesstimate on reversing the effects
+			let psp = players[i].GetPSPrite(PSP_WEAPON);
+			if (psp.x ~== prevX[i])
+				psp.x += xOffset[i];
+			if ((psp.y ~== prevY[i] && prevY[i] != WEAPONTOP) || psp.y > WEAPONTOP)
+				psp.y -= (yOffset[i] + vOffset[i]);
+			
+			bool bob = (players[i].WeaponState & WF_WEAPONBOBBING);
+			bool doReset = ((bobSway[i].GetBool() && !bob) ||
+							(fireSway[i].GetBool() && players[i].attackdown) ||
+							(noSwayBob[i].GetBool() && bob && !(players[i].vel ~== (0,0))));
+			
+			// Horizontal sway
+			
+			double hScalar = swayHScalar[i].GetFloat();
+			if (players[i].crouchFactor < 1)
+				hScalar *= players[i].crouchFactor * swayHCrouch[i].GetFloat();
+			
+			bool hReset;
+			if (hScalar ~== 0 && !(xOffset[i] ~== 0))
+			{
+				hReset = true;
+				hScalar = 1;
+			}
+			
+			double hRange = 32 * hScalar;
+			if (abs(xOffset[i]) > hRange)
+				hReset = true;
+			
+			double deltaAng = Actor.DeltaAngle(players[i].mo.angle, prevAngle[i]) * 2 * hScalar;
+			if (!(deltaAng ~== 0) && players[i].cmd.yaw && !players[i].turnticks)
+				deltaAng = -players[i].cmd.yaw * (360/65536.) * 2 * hScalar;
+			
+			if (!hMoveSway[i].GetBool())
+			{
+				Vector2 right = Actor.AngleToVector(players[i].mo.angle-90);
+				deltaAng += (players[i].mo.vel.xy dot right) * 1.5 * hScalar;
+			}
+			
+			if (swayHInverse[i].GetBool())
+				deltaAng *= -1;
+			
+			if (hReset || doReset)
+				deltaAng = 0;
+			
+			double hDiff = abs(deltaAng - xOffset[i]);
+			
+			double hSpeed = swayHSpeed[i].GetFloat() * hScalar;
+			if (hDiff >= 8*hScalar)
+				hSpeed *= 2;
+			
+			if (deltaAng ~== 0 || hDiff >= swayHAccuracy[i].GetFloat()*hScalar)
+			{
+				if (xOffset[i] > deltaAng)
+				{
+					xOffset[i] -= hSpeed;
+					
+					if (xOffset[i] < deltaAng)
+						xOffset[i] = deltaAng;
+				}
+				else if (xOffset[i] < deltaAng)
+				{
+					xOffset[i] += hSpeed;
+					
+					if (xOffset[i] > deltaAng)
+						xOffset[i] = deltaAng;
+				}
+			}
+			
+			if (!hReset)
+				xOffset[i] = clamp(xOffset[i], -hRange, hRange);
+			
+			psp.x -= xOffset[i];
+			
+			// Vertical sway
+			
+			double vScalar = swayVScalar[i].GetFloat();
+			if (players[i].crouchFactor < 1)
+				vScalar *= players[i].crouchFactor * swayVCrouch[i].GetFloat();
+			
+			bool vReset;
+			if (vScalar ~== 0 && !(yOffset[i] ~== 0))
+			{
+				vReset = true;
+				vScalar = 1;
+			}
+			
+			double vRange = 16 * vScalar;
+			if (abs(yOffset[i]) > vRange)
+				vReset = true;
+			
+			double deltaPch = Actor.DeltaAngle(players[i].mo.pitch, prevPitch[i]) * 2 * vScalar;
+			if (!(deltaPch ~== 0) && players[i].cmd.pitch && !players[i].centering)
+				deltaPch = players[i].cmd.pitch * (360/65536.) * 2 * vScalar;
+			
+			if (!vMoveSway[i].GetBool() || !fMoveSway[i].GetBool())
+			{
+				double amnt;
+				
+				if (!vMoveSway[i].GetBool())
+				{
+					Vector2 forward = Actor.AngleToVector(players[i].mo.angle);
+					amnt += (players[i].mo.vel.xy dot forward) * 0.5;
+				}
+				
+				if (!fMoveSway[i].GetBool())
+					amnt += (players[i].mo.vel dot (0,0,1));
+				
+				deltaPch += amnt * vScalar;
+			}
+			
+			if (swayVInverse[i].GetBool())
+				deltaPch *= -1;
+			
+			if (vReset || doReset || psp.y > WEAPONTOP)
+				deltaPch = 0;
+			
+			double vDiff = abs(deltaPch - yOffset[i]);
+			
+			double vSpeed = swayVSpeed[i].GetFloat() * vScalar;
+			if (vDiff >= 8*vScalar)
+				vSpeed *= 2;
+			
+			if (deltaPch ~== 0 || vDiff >= swayVAccuracy[i].GetFloat()*vScalar)
+			{
+				if (yOffset[i] > deltaPch)
+				{
+					yOffset[i] -= vSpeed;
+					
+					if (yOffset[i] < deltaPch)
+						yOffset[i] = deltaPch;
+				}
+				else if (yOffset[i] < deltaPch)
+				{
+					yOffset[i] += vSpeed;
+					
+					if (yOffset[i] > deltaPch)
+						yOffset[i] = deltaPch;
+				}
+			}
+			
+			if (!vReset)
+				yOffset[i] = clamp(yOffset[i], -vRange, vRange);
+			
+			// Vertical offset
+			
+			double pchOfs = players[i].mo.pitch + 90;
+			if (vInverse[i].GetBool())
+				pchOfs = 180 - pchOfs;
+			
+			vOffset[i] = pchOfs / 9 * vertScale[i].GetFloat();
+			
+			psp.y += vOffset[i];
+			
+			// Add y offset after vertical scaling
+			
+			psp.y += yOffset[i];
+			if (psp.y < WEAPONTOP)
+				psp.y = WEAPONTOP;
+			
+			prevAngle[i] = players[i].mo.angle;
+			prevPitch[i] = players[i].mo.pitch;
+			prevX[i] = psp.x;
+			prevY[i] = psp.y;
+		}
+	}
+	
+	private void CheckCVars(uint i)
+	{
+		if (!fireSway[i])
+			fireSway[i] = CVar.GetCVar("ws_disablefire", players[i]);
+		if (!bobSway[i])
+			bobSway[i] = CVar.GetCVar("ws_bobonly", players[i]);
+		if (!noSwayBob[i])
+			noSwayBob[i] = CVar.GetCVar("ws_nobobsway", players[i]);
+		if (!vInverse[i])
+			vInverse[i] = CVar.GetCVar("ws_inverseVert", players[i]);
+		if (!vertScale[i])
+			vertScale[i] = CVar.GetCVar("ws_vertscale", players[i]);
+		
+		if (!swayHInverse[i])
+			swayHInverse[i] = CVar.GetCVar("ws_swayhinverse", players[i]);
+		if (!swayHScalar[i])
+			swayHScalar[i] = CVar.GetCVar("ws_swayhscale", players[i]);
+		if (!swayHCrouch[i])
+			swayHCrouch[i] = CVar.GetCVar("ws_swayhcrouchscale", players[i]);
+		if (!swayHSpeed[i])
+			swayHSpeed[i] = CVar.GetCVar("ws_swayhspeed", players[i]);
+		if (!swayHAccuracy[i])
+			swayHAccuracy[i] = CVar.GetCVar("ws_swayhaccuracy", players[i]);
+		
+		if (!swayVInverse[i])
+			swayVInverse[i] = CVar.GetCVar("ws_swayvinverse", players[i]);
+		if (!swayVScalar[i])
+			swayVScalar[i] = CVar.GetCVar("ws_swayvscale", players[i]);
+		if (!swayVCrouch[i])
+			swayVCrouch[i] = CVar.GetCVar("ws_swayvcrouchscale", players[i]);
+		if (!swayVSpeed[i])
+			swayVSpeed[i] = CVar.GetCVar("ws_swayvspeed", players[i]);
+		if (!swayVAccuracy[i])
+			swayVAccuracy[i] = CVar.GetCVar("ws_swayvaccuracy", players[i]);
+		
+		if (!vMoveSway[i])
+			vMoveSway[i] = CVar.GetCVar("ws_novmove", players[i]);
+		if (!hMoveSway[i])
+			hMoveSway[i] = CVar.GetCVar("ws_nohmove", players[i]);
+		if (!fMoveSway[i])
+			fMoveSway[i] = CVar.GetCVar("ws_nofmove", players[i]);
+	}
+}
+
+class Test : Chaingun replaces Chaingun
+{
+	Default
+	{
+		Weapon.SlotNumber 4;
+		Weapon.BobRangeX 0;
+		Weapon.BobRangeY 0;
+	}
+}

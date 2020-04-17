@@ -1,0 +1,21 @@
+user bool ws_disablefire = false;
+user bool ws_bobonly = false;
+user bool ws_nobobsway = false;
+user bool ws_inverseVert = false;
+user float ws_vertscale = 1;
+
+user bool ws_swayhinverse = false;
+user float ws_swayhcrouchscale = 1;
+user float ws_swayhscale = 1;
+user float ws_swayhspeed = 2;
+user float ws_swayhaccuracy = 3;
+
+user bool ws_swayvinverse = false;
+user float ws_swayvcrouchscale = 1;
+user float ws_swayvscale = 1;
+user float ws_swayvspeed = 2;
+user float ws_swayvaccuracy = 3;
+
+user bool ws_nohmove = false;
+user bool ws_novmove = false;
+user bool ws_nofmove = false;
