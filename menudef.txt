@@ -32,7 +32,7 @@ OptionMenu "WSOptions"
 	WSSlider "$OPTION_SCALE", "$HELP_SCALE", "ws_swayvscale", 0, 2, 0.1, 2
 	WSSlider "$OPTION_CROUCHSCALE", "$HELP_CROUCHSCALE", "ws_swayvcrouchscale", 0, 2, 0.1, 2
 	WSSlider "$OPTION_SPEED", "$HELP_SPEED", "ws_swayvspeed", 1, 5, 0.5, 2
-	WSSlider "$OPTION_ACCURACY", "$HELP_ACCURACY", 0, 5, 0.5, 2
+	WSSlider "$OPTION_ACCURACY", "$HELP_ACCURACY", "ws_swayvaccuracy", 0, 5, 0.5, 2
 	
 	StaticText ""
 	StaticText "$SUBMENU_MSWAY", Gold
