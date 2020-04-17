@@ -1,5 +1,6 @@
 # Universal Weapon Sway
 Current version: Beta 1
+
 Tested on GZDoom 4.3.3
 
 ## What does this mod do?
