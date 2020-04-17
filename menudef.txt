@@ -1,49 +1,49 @@
 AddOptionMenu "OptionsMenu"
 {
-	Submenu "Weapon Sway Options", "WSOptions"
+	Submenu "$MENU_TITLE", "WSOptions"
 }
 
 OptionMenu "WSOptions"
 {
 	Class "WSOptionMenu"
-	Title "Weapon Sway Options"
+	Title "$MENU_TITLE"
 	
-	StaticText "General", Gold
+	StaticText "$SUBMENU_GEN", Gold
 	
-	WSOption "No Fire Sway", "Sway is disabled while firing", "ws_disablefire", "Toggle"
-	WSOption "Bob Sway", "Sway is only enabled if the current weapon can bob", "ws_bobonly", "Toggle"
-	WSOption "No Sway During Bob", "If the weapon is bobbing sway is disabled", "ws_nobobsway", "Toggle"
-	WSOption "Inverse Vertical Offset", "Inverts the vertical offset of the weapon", "ws_inverseVert", "Toggle"
-	WSSlider "Vertical Scale", "Scales the vertical offset of the weapon", "ws_vertscale", 0, 2, 0.1, 2
-	
-	StaticText ""
-	StaticText "Horizontal Sway", Gold
-	
-	WSOption "Inverse Horizontal Sway", "Inverts the direction of the sway", "ws_swayhinverse", "Toggle"
-	WSSlider "Sway Scale", "Scales the range of the sway", "ws_swayhscale", 0, 2, 0.1, 2
-	WSSlider "Crouch Sway Scale", "Scales the range of the sway when crouching", "ws_swayhcrouchscale", 0, 2, 0.1, 2
-	WSSlider "Sway Speed", "How quickly the sway moves", "ws_swayhspeed", 1, 5, 0.5, 2
-	WSSlider "Sway Accuracy", "Defines a deadzone in degrees for the sway where angle changes below that value are ignored", "ws_swayhaccuracy", 0, 5, 0.5, 2
+	WSOption "$OPTION_FIRE", "$HELP_FIRE", "ws_disablefire", "Toggle"
+	WSOption "$OPTION_BOB", "$HELP_BOB", "ws_bobonly", "Toggle"
+	WSOption "$OPTION_NOBOB", "$HELP_NOBOB", "ws_nobobsway", "Toggle"
+	WSOption "$OPTION_INVVERT", "$HELP_INVVERT", "ws_inverseVert", "Toggle"
+	WSSlider "$OPTION_VERTSCALE", "$HELP_VERTSCALE", "ws_vertscale", 0, 2, 0.1, 2
 	
 	StaticText ""
-	StaticText "Vertical Sway", Gold
+	StaticText "$SUBMENU_HSWAY", Gold
 	
-	WSOption "Inverse Vertical Sway", "Inverts the direction of the sway", "ws_swayvinverse", "Toggle"
-	WSSlider "Sway Scale", "Scales the range of the sway", "ws_swayvscale", 0, 2, 0.1, 2
-	WSSlider "Crouch Sway Scale", "Scales the range of the sway when crouching", "ws_swayvcrouchscale", 0, 2, 0.1, 2
-	WSSlider "Sway Speed", "How quickly the sway moves", "ws_swayvspeed", 1, 5, 0.5, 2
-	WSSlider "Sway Accuracy", "Defines a deadzone in degrees for the sway where angle changes below that value are ignored", "ws_swayvaccuracy", 0, 5, 0.5, 2
+	WSOption "$OPTION_INVERT", "$HELP_INVERT", "ws_swayhinverse", "Toggle"
+	WSSlider "$OPTION_SCALE", "$HELP_SCALE", "ws_swayhscale", 0, 2, 0.1, 2
+	WSSlider "$OPTION_CROUCHSCALE", "$HELP_CROUCHSCALE", "ws_swayhcrouchscale", 0, 2, 0.1, 2
+	WSSlider "$OPTION_SPEED", "$HELP_SPEED", "ws_swayhspeed", 1, 5, 0.5, 2
+	WSSlider "$OPTION_ACCURACY", "$HELP_ACCURACY", "ws_swayhaccuracy", 0, 5, 0.5, 2
 	
 	StaticText ""
-	StaticText "Movement Sway", Gold
+	StaticText "$SUBMENU_VSWAY", Gold
+	
+	WSOption "$OPTION_INVERT", "$HELP_INVERT", "ws_swayvinverse", "Toggle"
+	WSSlider "$OPTION_SCALE", "$HELP_SCALE", "ws_swayvscale", 0, 2, 0.1, 2
+	WSSlider "$OPTION_CROUCHSCALE", "$HELP_CROUCHSCALE", "ws_swayvcrouchscale", 0, 2, 0.1, 2
+	WSSlider "$OPTION_SPEED", "$HELP_SPEED", "ws_swayvspeed", 1, 5, 0.5, 2
+	WSSlider "$OPTION_ACCURACY", "$HELP_ACCURACY", 0, 5, 0.5, 2
+	
+	StaticText ""
+	StaticText "$SUBMENU_MSWAY", Gold
 
-	WSOption "No Horizontal Sway", "Disables horizontal swaying from movement", "ws_nohmove", "Toggle"
-	WSOption "No Vertical Sway", "Disables vertical swaying from movement", "ws_novmove", "Toggle"
-	WSOption "No Falling Sway", "Disables vertical swaying from falling", "ws_nofmove", "Toggle"
+	WSOption "$OPTION_HSWAY", "$HELP_HSWAY", "ws_nohmove", "Toggle"
+	WSOption "$OPTION_VSWAY", "$HELP_VSWAY", "ws_novmove", "Toggle"
+	WSOption "$OPTION_FSWAY", "$HELP_FSWAY", "ws_nofmove", "Toggle"
 }
 
 OptionValue "Toggle"
 {
-	0, "Off"
-	1, "On"
+	0, "$VALUE_DISABLED"
+	1, "$VALUE_ENABLED"
 }

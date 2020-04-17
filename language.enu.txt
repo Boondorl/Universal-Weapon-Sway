@@ -1,0 +1,43 @@
+[enu default]
+
+MENU_TITLE = "Weapon Sway Options";
+
+SUBMENU_GEN = "General";
+SUBMENU_HSWAY = "Horizontal Sway";
+SUBMENU_VSWAY = "Vertical Sway";
+SUBMENU_MSWAY = "Movement Sway";
+
+OPTION_FIRE = "No Sway When Firing";
+OPTION_BOB = "Bob Sway";
+OPTION_NOBOB = "No Sway When Bobbing";
+OPTION_INVVERT = "Invert Vertical Offset";
+OPTION_VERTSCALE = "Vertical Scale";
+
+OPTION_INVERT = "Invert Sway";
+OPTION_SCALE = "Sway Scale";
+OPTION_CROUCHSCALE = "Crouch Sway Scale";
+OPTION_SPEED = "Sway Speed";
+OPTION_ACCURACY = "Sway Accuracy";
+
+OPTION_HSWAY = "No Horizontal Sway";
+OPTION_VSWAY = "No Vertical Sway";
+OPTION_FSWAY = "No Falling Sway";
+
+VALUE_ENABLED = "on";
+VALUE_DISABLED = "off";
+
+HELP_FIRE = "Sway is disabled while firing";
+HELP_BOB = "Sway is only enabled if the current weapon can bob";
+HELP_NOBOB = "If the weapon is bobbing sway is disabled";
+HELP_INVVERT = "Inverts the vertical offset of the weapon";
+HELP_VERTSCALE = "Scales the vertical offset of the weapon";
+
+HELP_INVERT = "Inverts the direction of the sway";
+HELP_SCALE = "Scales the range of the sway";
+HELP_CROUCHSCALE = "Scales the range of the sway when crouching";
+HELP_SPEED = "How quickly the sway moves";
+HELP_ACCURACY = "Defines a deadzone in degrees for the sway where angle changes below that value are ignored";
+
+HELP_HSWAY = "Disables horizontal swaying from movement";
+HELP_VSWAY = "Disables vertical swaying from movement";
+HELP_FSWAY = "Disables vertical swaying from falling";
