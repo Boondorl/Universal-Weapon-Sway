@@ -286,13 +286,3 @@ class SwayManager : Thinker
 			fMoveSway[i] = CVar.GetCVar("ws_nofmove", players[i]);
 	}
 }
-
-class Test : Chaingun replaces Chaingun
-{
-	Default
-	{
-		Weapon.SlotNumber 4;
-		Weapon.BobRangeX 0;
-		Weapon.BobRangeY 0;
-	}
-}
