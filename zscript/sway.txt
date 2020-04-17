@@ -4,7 +4,7 @@ class SwayHandler : StaticEventHandler
 	
 	override void WorldLoaded(WorldEvent e)
 	{
-		if (e.isSaveGame || e.isReopen)
+		if (e.isSaveGame || e.isReopen || gamestate != GS_LEVEL)
 			return;
 		
 		if (!sway)
