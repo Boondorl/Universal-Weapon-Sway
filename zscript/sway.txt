@@ -235,15 +235,16 @@ class SwayManager : Thinker
 			if (vInverse[i].GetBool())
 				pchOfs = 180 - pchOfs;
 			
-			vOffset[i] = pchOfs / 9 * vertScale[i].GetFloat();
 			if (players[i].crouchFactor < 1)
 			{
-				double ofs = vOffset[i] * (1 - players[i].crouchFactor) * crouchVertScale[i].GetFloat();
+				double ofs = (pchOfs - (45 + pchOfs/2))*(1 - players[i].crouchFactor) * 2 * crouchVertScale[i].GetFloat();
 				if (crouchVInverse[i].GetBool())
 					ofs *= -1;
 				
-				vOffset[i] -= ofs;
+				pchOfs = clamp(pchOfs - ofs, 0, 180);
 			}
+			
+			vOffset[i] = pchOfs / 9 * vertScale[i].GetFloat();
 			
 			psp.y += vOffset[i];
 			
