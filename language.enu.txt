@@ -2,16 +2,20 @@
 
 MENU_TITLE = "Weapon Sway Options";
 
-SUBMENU_GEN = "General";
-SUBMENU_HSWAY = "Horizontal Sway";
-SUBMENU_VSWAY = "Vertical Sway";
-SUBMENU_MSWAY = "Movement Sway";
+HEADER_GEN = "General";
+HEADER_VERT = "Vertical Offset";
+HEADER_HSWAY = "Horizontal Sway";
+HEADER_VSWAY = "Vertical Sway";
+HEADER_MSWAY = "Movement Sway";
 
 OPTION_FIRE = "No Sway When Firing";
 OPTION_BOB = "Bob Sway";
 OPTION_NOBOB = "No Sway When Bobbing";
-OPTION_INVVERT = "Invert Vertical Offset";
-OPTION_VERTSCALE = "Vertical Scale";
+
+OPTION_INVVERT = "Invert Offset";
+OPTION_CROUCHINVVERT = "Invert Crouch Offset";
+OPTION_VERTSCALE = "Offset Scale";
+OPTION_CROUCHVERTSCALE = "Crouch Offset Scale";
 
 OPTION_INVERT = "Invert Sway";
 OPTION_SCALE = "Sway Scale";
@@ -29,8 +33,11 @@ VALUE_DISABLED = "off";
 HELP_FIRE = "Sway is disabled while firing";
 HELP_BOB = "Sway is only enabled if the current weapon can bob";
 HELP_NOBOB = "If the weapon is bobbing sway is disabled";
-HELP_INVVERT = "Inverts the vertical offset of the weapon";
-HELP_VERTSCALE = "Scales the vertical offset of the weapon";
+
+HELP_INVVERT = "Inverts the offset of the weapon";
+HELP_CROUCHINVVERT = "Inverts the direction of the offset when crouching";
+HELP_VERTSCALE = "Scales the offset of the weapon";
+HELP_CROUCHVERTSCALE = "Scales the offset from crouching";
 
 HELP_INVERT = "Inverts the direction of the sway";
 HELP_SCALE = "Scales the range of the sway";

@@ -4,13 +4,17 @@ class SwayHandler : StaticEventHandler
 	
 	override void WorldLoaded(WorldEvent e)
 	{
-		if (e.isSaveGame || e.isReopen || gamestate != GS_LEVEL)
+		if (gamestate != GS_LEVEL)
 			return;
+		
+		ThinkerIterator it = ThinkerIterator.Create("SwayManager", Thinker.MAX_STATNUM);
+		sway = SwayManager(it.Next());
 		
 		if (!sway)
 		{
 			sway = new("SwayManager");
 			sway.ChangeStatNum(Thinker.MAX_STATNUM);
+			
 			for (uint i = 0; i < MAXPLAYERS; ++i)
 			{
 				if (!playerInGame[i] || !players[i].mo)
@@ -23,6 +27,8 @@ class SwayHandler : StaticEventHandler
 				sway.prevY[i] = psp.y;
 			}
 		}
+		
+		sway.CheckCVars();
 	}
 }
 
@@ -42,8 +48,13 @@ class SwayManager : Thinker
 	transient CVar fireSway[MAXPLAYERS];
 	transient CVar bobSway[MAXPLAYERS];
 	transient CVar noSwayBob[MAXPLAYERS];
+	
+	// Vertical offset
+	
 	transient CVar vInverse[MAXPLAYERS];
+	transient CVar crouchVInverse[MAXPLAYERS];
 	transient CVar vertScale[MAXPLAYERS];
+	transient CVar crouchVertScale[MAXPLAYERS];
 	
 	// Horizontal sway
 	
@@ -73,8 +84,6 @@ class SwayManager : Thinker
 		{
 			if (!playerInGame[i] || !players[i].mo)
 				continue;
-			
-			CheckCVars(i);
 			
 			// This is a best guesstimate on reversing the effects
 			let psp = players[i].GetPSPrite(PSP_WEAPON);
@@ -227,6 +236,14 @@ class SwayManager : Thinker
 				pchOfs = 180 - pchOfs;
 			
 			vOffset[i] = pchOfs / 9 * vertScale[i].GetFloat();
+			if (players[i].crouchFactor < 1)
+			{
+				double ofs = vOffset[i] * (1 - players[i].crouchFactor) * crouchVertScale[i].GetFloat();
+				if (crouchVInverse[i].GetBool())
+					ofs *= -1;
+				
+				vOffset[i] -= ofs;
+			}
 			
 			psp.y += vOffset[i];
 			
@@ -243,46 +260,57 @@ class SwayManager : Thinker
 		}
 	}
 	
-	private void CheckCVars(uint i)
+	void CheckCVars()
 	{
-		if (!fireSway[i])
-			fireSway[i] = CVar.GetCVar("ws_disablefire", players[i]);
-		if (!bobSway[i])
-			bobSway[i] = CVar.GetCVar("ws_bobonly", players[i]);
-		if (!noSwayBob[i])
-			noSwayBob[i] = CVar.GetCVar("ws_nobobsway", players[i]);
-		if (!vInverse[i])
-			vInverse[i] = CVar.GetCVar("ws_inverseVert", players[i]);
-		if (!vertScale[i])
-			vertScale[i] = CVar.GetCVar("ws_vertscale", players[i]);
-		
-		if (!swayHInverse[i])
-			swayHInverse[i] = CVar.GetCVar("ws_swayhinverse", players[i]);
-		if (!swayHScalar[i])
-			swayHScalar[i] = CVar.GetCVar("ws_swayhscale", players[i]);
-		if (!swayHCrouch[i])
-			swayHCrouch[i] = CVar.GetCVar("ws_swayhcrouchscale", players[i]);
-		if (!swayHSpeed[i])
-			swayHSpeed[i] = CVar.GetCVar("ws_swayhspeed", players[i]);
-		if (!swayHAccuracy[i])
-			swayHAccuracy[i] = CVar.GetCVar("ws_swayhaccuracy", players[i]);
-		
-		if (!swayVInverse[i])
-			swayVInverse[i] = CVar.GetCVar("ws_swayvinverse", players[i]);
-		if (!swayVScalar[i])
-			swayVScalar[i] = CVar.GetCVar("ws_swayvscale", players[i]);
-		if (!swayVCrouch[i])
-			swayVCrouch[i] = CVar.GetCVar("ws_swayvcrouchscale", players[i]);
-		if (!swayVSpeed[i])
-			swayVSpeed[i] = CVar.GetCVar("ws_swayvspeed", players[i]);
-		if (!swayVAccuracy[i])
-			swayVAccuracy[i] = CVar.GetCVar("ws_swayvaccuracy", players[i]);
-		
-		if (!vMoveSway[i])
-			vMoveSway[i] = CVar.GetCVar("ws_novmove", players[i]);
-		if (!hMoveSway[i])
-			hMoveSway[i] = CVar.GetCVar("ws_nohmove", players[i]);
-		if (!fMoveSway[i])
-			fMoveSway[i] = CVar.GetCVar("ws_nofmove", players[i]);
+		for (uint i = 0; i < MAXPLAYERS; ++i)
+		{
+			if (!playerInGame[i] || !players[i].mo)
+				continue;
+			
+			if (!fireSway[i])
+				fireSway[i] = CVar.GetCVar("ws_disablefire", players[i]);
+			if (!bobSway[i])
+				bobSway[i] = CVar.GetCVar("ws_bobonly", players[i]);
+			if (!noSwayBob[i])
+				noSwayBob[i] = CVar.GetCVar("ws_nobobsway", players[i]);
+			
+			if (!vInverse[i])
+				vInverse[i] = CVar.GetCVar("ws_inversevert", players[i]);
+			if (!crouchVInverse[i])
+				crouchVInverse[i] = CVar.GetCVar("ws_crouchinversevert", players[i]);
+			if (!vertScale[i])
+				vertScale[i] = CVar.GetCVar("ws_vertscale", players[i]);
+			if (!crouchVertScale[i])
+				crouchVertScale[i] = CVar.GetCVar("ws_crouchvertscale", players[i]);
+			
+			if (!swayHInverse[i])
+				swayHInverse[i] = CVar.GetCVar("ws_swayhinverse", players[i]);
+			if (!swayHScalar[i])
+				swayHScalar[i] = CVar.GetCVar("ws_swayhscale", players[i]);
+			if (!swayHCrouch[i])
+				swayHCrouch[i] = CVar.GetCVar("ws_swayhcrouchscale", players[i]);
+			if (!swayHSpeed[i])
+				swayHSpeed[i] = CVar.GetCVar("ws_swayhspeed", players[i]);
+			if (!swayHAccuracy[i])
+				swayHAccuracy[i] = CVar.GetCVar("ws_swayhaccuracy", players[i]);
+			
+			if (!swayVInverse[i])
+				swayVInverse[i] = CVar.GetCVar("ws_swayvinverse", players[i]);
+			if (!swayVScalar[i])
+				swayVScalar[i] = CVar.GetCVar("ws_swayvscale", players[i]);
+			if (!swayVCrouch[i])
+				swayVCrouch[i] = CVar.GetCVar("ws_swayvcrouchscale", players[i]);
+			if (!swayVSpeed[i])
+				swayVSpeed[i] = CVar.GetCVar("ws_swayvspeed", players[i]);
+			if (!swayVAccuracy[i])
+				swayVAccuracy[i] = CVar.GetCVar("ws_swayvaccuracy", players[i]);
+			
+			if (!vMoveSway[i])
+				vMoveSway[i] = CVar.GetCVar("ws_novmove", players[i]);
+			if (!hMoveSway[i])
+				hMoveSway[i] = CVar.GetCVar("ws_nohmove", players[i]);
+			if (!fMoveSway[i])
+				fMoveSway[i] = CVar.GetCVar("ws_nofmove", players[i]);
+		}
 	}
 }
