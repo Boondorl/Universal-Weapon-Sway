@@ -23,6 +23,12 @@ class SwayHandler : StaticEventHandler
 				sway.prevAngle[i] = players[i].mo.angle;
 				sway.prevPitch[i] = players[i].mo.pitch;
 				let psp = players[i].GetPSPrite(PSP_WEAPON);
+				if (!psp)
+				{
+					sway.prevY[i] = WEAPONBOTTOM;
+					continue;
+				}
+				
 				sway.prevX[i] = psp.x;
 				sway.prevY[i] = psp.y;
 			}
@@ -85,8 +91,20 @@ class SwayManager : Thinker
 			if (!playerInGame[i] || !players[i].mo)
 				continue;
 			
-			// This is a best guesstimate on reversing the effects
 			let psp = players[i].GetPSPrite(PSP_WEAPON);
+			if (!psp)
+			{
+				prevAngle[i] = players[i].mo.angle;
+				prevPitch[i] = players[i].mo.pitch;
+				xOffset[i] = 0;
+				yOffset[i] = 0;
+				vOffset[i] = 0;
+				prevX[i] = 0;
+				prevY[i] = WEAPONBOTTOM;
+				continue;
+			}
+			
+			// This is a best guesstimate on reversing the effects
 			if (psp.x ~== prevX[i])
 				psp.x += xOffset[i];
 			if ((psp.y ~== prevY[i] && prevY[i] != WEAPONTOP) || psp.y > WEAPONTOP)
