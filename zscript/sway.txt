@@ -38,12 +38,19 @@ class SwayHandler : StaticEventHandler
 	}
 }
 
+struct LayerManager
+{
+	Array<PSprite> layers;
+}
+
 class SwayManager : Thinker
 {
 	double prevAngle[MAXPLAYERS];
 	double prevPitch[MAXPLAYERS];
 	double prevX[MAXPLAYERS];
 	double prevY[MAXPLAYERS];
+	
+	LayerManager lm[MAXPLAYERS];
 	
 	double xOffset[MAXPLAYERS];
 	double yOffset[MAXPLAYERS];
@@ -112,6 +119,24 @@ class SwayManager : Thinker
 				psp.x += xOffset[i];
 			if ((psp.y ~== prevY[i] && prevY[i] != WEAPONTOP) || psp.y > WEAPONTOP)
 				psp.y -= (yOffset[i] + vOffset[i]);
+			
+			for (uint j = 0; j < lm[i].layers.Size(); ++j)
+			{
+				let layer = lm[i].layers[j];
+				if (layer)
+					layer.x -= xOffset[i]*2;
+			}
+			
+			lm[i].layers.Clear();
+			
+			for (let pspr = players[i].psprites; pspr; pspr = pspr.next)
+			{
+				if (pspr.id == PSP_WEAPON)
+					continue;
+				
+				if (pspr.bAddWeapon && pspr.bMirror)
+					lm[i].layers.Push(pspr);
+			}
 			
 			bool bob = (players[i].WeaponState & WF_WEAPONBOBBING);
 			bool doReset = ((bobSway[i].GetBool() && !bob) ||
@@ -191,6 +216,13 @@ class SwayManager : Thinker
 				xOffset[i] = clamp(xOffset[i], -hRange, hRange);
 			
 			psp.x -= xOffset[i];
+			
+			for (uint j = 0; j < lm[i].layers.Size(); ++j)
+			{
+				let layer = lm[i].layers[j];
+				if (layer)
+					layer.x += xOffset[i]*2;
+			}
 			
 			// Vertical sway
 			
