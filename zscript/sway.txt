@@ -41,6 +41,7 @@ class SwayHandler : StaticEventHandler
 struct LayerManager
 {
 	Array<PSprite> layers;
+	Array<double> prev;
 }
 
 class SwayManager : Thinker
@@ -124,10 +125,15 @@ class SwayManager : Thinker
 			{
 				let layer = lm[i].layers[j];
 				if (layer)
-					layer.x -= xOffset[i]*2;
+				{
+					layer.oldx = lm[i].prev[j];
+					if (layer.x ~== lm[i].prev[j])
+						layer.x -= xOffset[i]*2;
+				}
 			}
 			
 			lm[i].layers.Clear();
+			lm[i].prev.Clear();
 			
 			for (let pspr = players[i].psprites; pspr; pspr = pspr.next)
 			{
@@ -221,7 +227,12 @@ class SwayManager : Thinker
 			{
 				let layer = lm[i].layers[j];
 				if (layer)
+				{
 					layer.x += xOffset[i]*2;
+					lm[i].prev.Push(layer.x);
+				}
+				else
+					lm[i].prev.Push(0);
 			}
 			
 			// Vertical sway
