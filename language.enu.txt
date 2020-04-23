@@ -12,12 +12,14 @@ OPTION_FIRE = "No Sway When Firing";
 OPTION_BOB = "Bob Sway";
 OPTION_NOBOB = "No Sway When Bobbing";
 
+OPTION_EXTEND = "Extend Sprite";
 OPTION_INVVERT = "Invert Offset";
 OPTION_CROUCHINVVERT = "Invert Crouch Offset";
 OPTION_VERTSCALE = "Offset Scale";
 OPTION_CROUCHVERTSCALE = "Crouch Offset Scale";
 
 OPTION_INVERT = "Invert Sway";
+OPTION_CUMUL = "Cumulative Sway";
 OPTION_SCALE = "Sway Scale";
 OPTION_CROUCHSCALE = "Crouch Sway Scale";
 OPTION_SPEED = "Sway Speed";
@@ -34,12 +36,14 @@ HELP_FIRE = "Sway is disabled while firing";
 HELP_BOB = "Sway is only enabled if the current weapon can bob";
 HELP_NOBOB = "If the weapon is bobbing sway is disabled";
 
+HELP_EXTEND = "Allows sprites to extend beyond their usual top (note: requires taller sprites to avoid cutoff)";
 HELP_INVVERT = "Inverts the offset of the weapon";
 HELP_CROUCHINVVERT = "Inverts the direction of the offset when crouching";
 HELP_VERTSCALE = "Scales the offset of the weapon";
 HELP_CROUCHVERTSCALE = "Scales the offset from crouching";
 
 HELP_INVERT = "Inverts the direction of the sway";
+HELP_CUMUL = "Makes sway cumulative instead of inertia based";
 HELP_SCALE = "Scales the range of the sway";
 HELP_CROUCHSCALE = "Scales the range of the sway when crouching";
 HELP_SPEED = "How quickly the sway moves";
