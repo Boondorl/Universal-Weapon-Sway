@@ -116,8 +116,12 @@ class SwayManager : Thinker
 			
 			// This is a best guesstimate on reversing the effects
 			let psp = players[i].GetPSPrite(PSP_WEAPON);
+			
+			psp.oldx = prevX[i];
 			if (psp.x ~== prevX[i])
 				psp.x += xOffset[i];
+			
+			psp.oldy = prevY[i];
 			if ((psp.y ~== prevY[i] && prevY[i] != WEAPONTOP) || psp.y > WEAPONTOP)
 				psp.y -= (yOffset[i] + vOffset[i]);
 			
