@@ -41,7 +41,8 @@ class SwayHandler : StaticEventHandler
 struct LayerManager
 {
 	Array<PSprite> layers;
-	Array<double> prev;
+	Array<double> prevX;
+	Array<double> prevY;
 }
 
 class SwayManager : Thinker
@@ -131,21 +132,23 @@ class SwayManager : Thinker
 				let layer = lm[i].layers[j];
 				if (layer)
 				{
-					layer.oldx = lm[i].prev[j];
-					if (layer.x ~== lm[i].prev[j])
+					layer.oldx = lm[i].prevX[j];
+					layer.oldy = lm[i].prevY[j];
+					if (layer.bMirror && layer.x ~== lm[i].prevX[j])
 						layer.x -= xOffset[i]*2;
 				}
 			}
 			
 			lm[i].layers.Clear();
-			lm[i].prev.Clear();
+			lm[i].prevX.Clear();
+			lm[i].prevY.Clear();
 			
 			for (let pspr = players[i].psprites; pspr; pspr = pspr.next)
 			{
 				if (pspr.id == PSP_WEAPON)
 					continue;
 				
-				if (pspr.bAddWeapon && pspr.bMirror)
+				if (pspr.bAddWeapon)
 					lm[i].layers.Push(pspr);
 			}
 			
@@ -233,11 +236,17 @@ class SwayManager : Thinker
 				let layer = lm[i].layers[j];
 				if (layer)
 				{
-					layer.x += xOffset[i]*2;
-					lm[i].prev.Push(layer.x);
+					if (layer.bMirror)
+						layer.x += xOffset[i]*2;
+					
+					lm[i].prevX.Push(layer.x);
+					lm[i].prevY.Push(layer.y);
 				}
 				else
-					lm[i].prev.Push(0);
+				{
+					lm[i].prevX.Push(0);
+					lm[i].prevY.Push(0);
+				}
 			}
 			
 			// Vertical sway
@@ -360,9 +369,10 @@ class SwayManager : Thinker
 			
 			// Add y offset after vertical scaling
 			
+			if (!ext && psp.y + yOffset[i] < WEAPONTOP)
+				yOffset[i] = min(0, WEAPONTOP - psp.y);
+			
 			psp.y += yOffset[i];
-			if (psp.y < WEAPONTOP && !ext)
-				psp.y = WEAPONTOP;
 			
 			prevAngle[i] = players[i].mo.angle;
 			prevPitch[i] = players[i].mo.pitch;
