@@ -13,6 +13,7 @@ OPTION_BOB = "Bob Sway";
 OPTION_NOBOB = "No Sway When Bobbing";
 
 OPTION_EXTEND = "Extend Sprite";
+OPTION_READYEXT = "Only Extend When Idle";
 OPTION_INVVERT = "Invert Offset";
 OPTION_CROUCHINVVERT = "Invert Crouch Offset";
 OPTION_VERTSCALE = "Offset Scale";
@@ -37,6 +38,7 @@ HELP_BOB = "Sway is only enabled if the current weapon can bob";
 HELP_NOBOB = "If the weapon is bobbing sway is disabled";
 
 HELP_EXTEND = "Allows sprites to extend beyond their usual top (note: requires taller sprites to avoid cutoff)";
+HELP_READYEXT = "Only extend sprites when the weapon isn't doing anything";
 HELP_INVVERT = "Inverts the offset of the weapon";
 HELP_CROUCHINVVERT = "Inverts the direction of the offset when crouching";
 HELP_VERTSCALE = "Scales the offset of the weapon";

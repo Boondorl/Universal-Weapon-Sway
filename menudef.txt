@@ -18,6 +18,7 @@ OptionMenu "WSOptions"
 	StaticText "$HEADER_VERT", Gold
 	
 	WSOption "$OPTION_EXTEND", "$HELP_EXTEND", "ws_vertextend", "Toggle"
+	WSOption "$OPTION_READYEXT", "$HELP_READYEXT", "ws_extendready", "Toggle"
 	WSOption "$OPTION_INVVERT", "$HELP_INVVERT", "ws_inversevert", "Toggle"
 	WSOption "$OPTION_CROUCHINVVERT", "$HELP_CROUCHINVVERT", "ws_crouchinversevert", "Toggle"
 	WSSlider "$OPTION_VERTSCALE", "$HELP_VERTSCALE", "ws_vertscale", 0, 2, 0.1, 2

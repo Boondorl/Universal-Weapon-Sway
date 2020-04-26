@@ -66,6 +66,7 @@ class SwayManager : Thinker
 	// Vertical offset
 	
 	transient CVar vExtend[MAXPLAYERS];
+	transient CVar rExtend[MAXPLAYERS];
 	transient CVar vInverse[MAXPLAYERS];
 	transient CVar crouchVInverse[MAXPLAYERS];
 	transient CVar vertScale[MAXPLAYERS];
@@ -122,7 +123,7 @@ class SwayManager : Thinker
 				psp.x += xOffset[i];
 			
 			psp.oldy = prevY[i];
-			if ((psp.y ~== prevY[i] && prevY[i] != WEAPONTOP) || psp.y > WEAPONTOP)
+			if ((psp.y ~== prevY[i] && prevY[i] != WEAPONTOP) || psp.y > WEAPONTOP || (vExtend[i].GetBool() && psp.y < WEAPONTOP))
 				psp.y -= (yOffset[i] + vOffset[i]);
 			
 			for (uint j = 0; j < lm[i].layers.Size(); ++j)
@@ -349,6 +350,12 @@ class SwayManager : Thinker
 			
 			vOffset[i] = pchOfs / 9 * vertScale[i].GetFloat();
 			
+			if (ext && rExtend[i].GetBool() &&
+			(!(players[i].WeaponState & (WF_WEAPONREADY|WF_WEAPONREADYALT)) || players[i].attackdown) && vOffset[i] < 0)
+			{
+				vOffset[i] = 0;
+			}
+			
 			psp.y += vOffset[i];
 			
 			// Add y offset after vertical scaling
@@ -380,6 +387,8 @@ class SwayManager : Thinker
 			
 			if (!vExtend[i])
 				vExtend[i] = CVar.GetCVar("ws_vertextend", players[i]);
+			if (!rExtend[i])
+				rExtend[i] = CVar.GetCVar("ws_extendready", players[i]);
 			if (!vInverse[i])
 				vInverse[i] = CVar.GetCVar("ws_inversevert", players[i]);
 			if (!crouchVInverse[i])

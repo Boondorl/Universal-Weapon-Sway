@@ -3,6 +3,7 @@ user bool ws_bobonly = false;
 user bool ws_nobobsway = false;
 
 user bool ws_vertextend = false;
+user bool ws_extendready = false;
 user bool ws_inversevert = false;
 user bool ws_crouchinversevert = false;
 user float ws_vertscale = 1;
