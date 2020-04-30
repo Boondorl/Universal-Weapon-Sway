@@ -4,9 +4,6 @@ class SwayHandler : StaticEventHandler
 	
 	override void WorldLoaded(WorldEvent e)
 	{
-		if (gamestate != GS_LEVEL)
-			return;
-		
 		ThinkerIterator it = ThinkerIterator.Create("SwayManager", Thinker.MAX_STATNUM);
 		sway = SwayManager(it.Next());
 		
