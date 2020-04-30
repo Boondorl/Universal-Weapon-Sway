@@ -1,4 +1,4 @@
 version "2.4"
 
-#include "zscript/sway.txt"
-#include "zscript/menu.txt"
+#include "sway/sway.txt"
+#include "sway/menu.txt"
