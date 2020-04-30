@@ -1,5 +1,5 @@
 # Universal Weapon Sway
-Current version: v1
+Current version: 1.0
 
 Tested on GZDoom 4.3.3
 
